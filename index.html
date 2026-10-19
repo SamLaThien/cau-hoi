@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Câu Hỏi</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #fcfbf9;
+            color: #2d3748;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 750px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #d97706;
+            margin-bottom: 12px;
+        }
+
+        /* Khung chứa dải nút vuốt ngang */
+        .strip-wrapper {
+            position: relative;
+            margin-bottom: 14px;
+        }
+
+        /* Dải Button 1 hàng ngang - vuốt trái/phải, không xuống dòng */
+        .button-strip {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 4px 2px 10px 2px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .button-strip::-webkit-scrollbar {
+            height: 5px;
+        }
+
+        .button-strip::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        .button-strip::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* Kiểu dáng từng ô Button */
+        .question-btn {
+            flex: 0 0 auto;
+            white-space: nowrap;
+            background-color: #ffffff;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 14.5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+            user-select: none;
+        }
+
+        .question-btn:hover {
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
+        }
+
+        /* Trạng thái khi Button đang được chọn (màu cam nhạt) */
+        .question-btn.active {
+            background-color: #fbeee0;
+            border-color: #e5a970;
+            color: #b45309;
+            font-weight: 600;
+        }
+
+        /* Khung hiển thị Câu Trả Lời nằm ngay bên dưới thanh trượt */
+        .answer-box {
+            background-color: #f1f8f5;
+            border: 1px solid #b7dfd0;
+            border-radius: 14px;
+            padding: 16px 18px;
+            line-height: 1.65;
+            font-size: 15.5px;
+            color: #1e293b;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .answer-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #b7dfd0;
+        }
+
+        .answer-line {
+            margin-bottom: 6px;
+        }
+
+        .answer-line.heading {
+            font-weight: 700;
+            color: #0f5132;
+            margin-top: 12px;
+        }
+
+        .answer-line.heading:first-child {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="page-title">Câu Hỏi</div>
+
+    <!-- Dải Button vuốt ngang 1 dòng duy nhất -->
+    <div class="strip-wrapper">
+        <div id="buttonStrip" class="button-strip"></div>
+    </div>
+
+    <!-- Khung Câu Trả Lời nằm ngay bên dưới -->
+    <div id="answerBox" class="answer-box">
+        <div id="answerTitle" class="answer-title"></div>
+        <div id="answerContent"></div>
+    </div>
+</div>
+
+<script>
+    const qaList = [
+        {
+            q: "C-TPAT",
+            a: [
+                "C-TPAT là gì? Là đối tác Hải Quan Thương Mại Chống Khủng Bố",
+                "Trách nhiệm của công nhân viên trong chương trình C-TPAT tại nhà máy:",
+                "- Đến nhà máy phải đeo thẻ nhân viên để nhận dạng",
+                "- Không phận sự không được đến những khu vực nhạy cảm: khu đóng gói, hầm lên xuống cont, kho thành phẩm, kho nguyên vật liệu",
+                "- Chịu sự kiểm soát ra vào cổng của bảo vệ",
+                "- Tìm hiểu và nhận thức chính sách C-TPAT",
+                "- Chính sách C-TPAT của nhà máy có dán tại cổng bảo vệ, bảng thông báo của đơn vị",
+                "Nhận thức các sự kiện C-TPAT:",
+                "- Người không làm việc tại công ty và không đeo thẻ nhận dạng đột nhập vào công ty",
+                "- Vật lạ đáng nghi ngờ: thùng hàng hóa tình nghi",
+                "Phương thức xử lý sự kiện C-TPAT:",
+                "- Đứng xa người, vật tình nghi 10 mét - Lập tức báo bảo vệ đến hỗ trợ xử lý",
+                "- Theo chỉ lệnh của bảo vệ đến nơi an toàn",
+                "- Tự giác phát hiện các tình huống vi phạm C-TPAT và báo cho người phụ trách C-TPAT",
+                "- Định kỳ hàng năm tham gia chương trình đào tạo C-TPAT theo yêu cầu của nhà máy"
+            ]
+        },
+        {
+            q: "Có bao nhiêu cách khiếu nại",
+            a: [
+                "9 Cách Khiếu Nại:",
+                "- C1: Cán Bộ Hiện Trường",
+                "- C2: Nhân Quyền Xưởng (Khu B: đầu xưởng B5. Khu C: C1 lầu 1)",
+                "- C3: Nhân Quyền Trung Tâm Hành Chính (Khu C: C2 lầu 1)",
+                "- C4: Công Đoàn (Khu A: A1 lầu 2, sđt 7376)",
+                "- C5: Thùng Thư Khiếu Nại (Vị trí: Nhà vệ sinh nữ và Nhà ăn)",
+                "- C6: Gửi Mail:",
+                "  + Khu B: yd-sdkieu@pyv.com.vn",
+                "  + Khu C: yd-nhanquyenc@pyv.com.vn",
+                "- C7: Gọi Điện Thoại Đến Phòng Nhân Quyền Xưởng:",
+                "  + Khu B: 5839, Khu C: 6807",
+                "- C8: Họp Tọa Đàm Hàng Tháng",
+                "- C9: Phòng Tiếp Kiến:",
+                "  + Khu B: B3 lầu 2, sđt 5825",
+                "  + Khu C: C1 lầu 3, sđt 6805",
+                "Thời gian xử lý vấn đề trong vòng 30 ngày kể từ ngày tiếp nhận."
+            ]
+        },
+        {
+            q: "ISO",
+            a: [
+                "ISO 9001: 2015: Hệ thống quản lý chất lượng",
+                "Lợi ích:",
+                "- Mang lại sự vừa ý cho khách hàng về chất lượng",
+                "- Giảm chi phí giá thành, tăng lợi nhuận",
+                "- Quản lý tốt, toàn diện về chất lượng",
+                "- Tổ chức liên tục cải tiến",
+                "ISO 14001: 2015: Hệ thống quản lý môi trường",
+                "- Tinh thần ISO 14001 9001+5000 (5S)",
+                "- (5S: chỉnh lý, chỉnh đốn, quét dọn, vệ sinh, tu dưỡng)",
+                "Lợi ích:",
+                "- Ngăn ngừa ô nhiễm",
+                "- Tuân thủ luật",
+                "ISO 45001: 2018: Hệ thống quản lý an toàn sức khỏe nghề nghiệp",
+                "- Hình tượng công ty"
+            ]
+        },
+        {
+            q: "Giá trị cốt lõi",
+            a: [
+                "Chuyên Nghiệp:",
+                "- Tích cực chủ động, xử lý nhanh chóng, tài nguyên cùng hưởng, đồng đội hợp tác",
+                "Cống Hiến:",
+                "- Giữ hạnh kiểm tốt, giúp người thúc ta, sẵn sàng gánh vác, mạnh dạn đảm nhận",
+                "Sáng Tạo:",
+                "- Tư duy sáng tạo, hướng đến tương lai, không sợ thách thức, hành động hết mình",
+                "Phục Vụ:",
+                "- Nâng cao sức cạnh tranh của khách hàng, làm tròn trách nhiệm xã hội",
+                "Sứ mệnh của công ty:",
+                "- Không ngừng cung cấp các sản phẩm, dịch vụ, giải pháp công nghệ tốt nhất và trở thành nền tảng đa giá trị nhất trên thế giới dựa trên các dịch vụ sản xuất thông minh và sáng tạo",
+                "Mục tiêu của công ty:",
+                "- Giữ vị trí hàng đầu về sản xuất giày dép toàn cầu và trở thành thương hiệu sản xuất giày dép thể thao và thời trang lớn nhất trên thế giới"
+            ]
+        },
+        {
+            q: "OPEX",
+            a: [
+                "- OPEX kết quả 2023: C (54 điểm), mục tiêu 2024: B (71 điểm)",
+                "- OPEX là sự vận hành hoàn hảo, hạng mục đánh giá của DECATHLON",
+                "Hạng mục chi tiết:",
+                "Opex gồm có 5 hạng mục lớn và 44 hạng mục nhỏ:",
+                "+ Axis 0: có 7 hạng mục: Liên tục cải thiện kết quả thực hiện (I)",
+                "+ Axis 1: có 8 hạng mục: Thúc đẩy sự thay đổi tiến đến một nhà máy tự cải thiện bền vững (C)",
+                "+ Axis 2: có 8 hạng mục: Phát triển văn hóa tư duy giải quyết vấn đề (P)",
+                "+ Axis 3: có 12 hạng mục: Tập trung vào việc trao quyền cho các thành viên (E)",
+                "+ Axis 4: có 9 hạng mục: Liên tục tối ưu hóa chuỗi giá trị của mình để làm hài lòng khách hàng (O)",
+                "Nội dung phỏng vấn cơ bản:",
+                "- DECATHLON là chuỗi bán lẻ của tất cả các mặt hàng liên quan đến thể thao đến từ Pháp thành lập năm 1976",
+                "- Giám đốc khách hàng DECATHLON là ÔNG MAXIME ROGEON",
+                "- CI là liên tục cải tiến. Cán bộ quản lý CI là NGUYỄN THỊ HỒNG CHI, chức vụ: chủ nhiệm, văn phòng CI được đặt tại khu khai thác B2-3F",
+                "- CI gồm 4 kỹ năng: OPEX, LEAN, PDCA, AN TOÀN SẢN PHẨM",
+                "- PDCA là chu trình cải tiến liên tục:",
+                "  + Plan: Kế hoạch",
+                "  + Do: Thực hiện",
+                "  + Check: Kiểm tra",
+                "  + Action: Hành động",
+                "- LEAN là loại bỏ lãng phí, Công ty có chuyên án thúc đẩy Cải Thiện và có phát thưởng cho những đề xuất ý tưởng cải thiện, chi tiết được dán tại mỗi B gần Văn Phòng",
+                "- Có 8 đại lãng phí chính:",
+                "  + Sản xuất dư",
+                "  + Vận chuyển",
+                "  + Hàng tồn",
+                "  + Thao tác",
+                "  + Hàng kém chất lượng",
+                "  + Thời gian chờ đợi",
+                "  + Lưu trình dư",
+                "  + Lãng phí quản lý",
+                "- 6S là một phương pháp quản lý và sắp xếp nơi làm việc, bao gồm: phân loại, sắp xếp, sạch sẽ, tiêu chuẩn hóa, duy trì, an toàn. Hình tiêu chuẩn 6S gồm 79 điều và được gắn ở cặp tường của mỗi B.",
+                "- Công ty YUEDE thành lập vào năm: 2010",
+                "Vị trí gắn các Hiển Thị Liên Quan:",
+                "- Mục tiêu, giá trị cốt lõi, sứ mệnh của công ty được gắn ở đầu mỗi B và cửa giữa gần máy gạt thẻ.",
+                "- LƯU TRÌNH ĐĂNG KÝ Ý TƯỞNG CẢI THIỆN: Gồm 7 bước và được gắn ở đầu mỗi B gần máy gạt thẻ.",
+                "- QUẢN LÝ HIỂN THỊ BẢNG 5 MÀU, HIỂN THỊ ĐƯỜNG ĐỊNH VỊ GẮN Ở CẶP TƯỜNG CỦA MỖI B.",
+                "- CHUỖI GIÁ TRỊ, LƯU TRÌNH GIẢI QUYẾT VẤN ĐỀ, KẾT QUẢ KHẢO SÁT KHÁCH HÀNG NỘI BỘ và NGOẠI BỘ dán ở bảng thông báo xưởng vụ."
+            ]
+        },
+        {
+            q: "Phẩm Chất",
+            a: [
+                "- Phẩm chất là nhu cầu đầy đủ của Khách Hàng và Người Tiêu Dùng.",
+                "- Lần thứ nhất là phải làm đúng sự việc, sản phẩm tốt để có khách không ngừng trở về, những sản phẩm xuất đi không được trở lại (Khách Hàng khiếu nại), thái độ phục vụ lựa ra sản phẩm tốt, đẹp nhất.",
+                "- Chúng ta không sợ có vấn đề mà sợ không biết vấn đề ở đâu hoặc là không có năng lực giải quyết vấn đề."
+            ]
+        },
+        {
+            q: "Trước khi kiểm tra phẩm chất cần chuẩn bị",
+            a: [
+                "- Lưu trình kiểm nghiệm của QCTT",
+                "- Sơ đồ tổ chức đơn vị",
+                "- Bảng huấn luyện đào tạo công nhân hàng tháng",
+                "- Bảng kế hoạch rút mẫu, tiêu chuẩn giao nguyên vật liệu thí nghiệm",
+                "- Kế hoạch đào tạo nhân viên",
+                "- Chi tiết do thu mua cung cấp",
+                "- Sổ kiểm nghiệm hàng ngày",
+                "- Báo biểu thí nghiệm + Giày Mẫu + Biểu Mẫu",
+                "- Dụng cụ kiểm hàng đã được hiệu chỉnh",
+                "- Tem OK-No OK",
+                "- Đơn không đạt chất",
+                "- Hệ thống trả hàng",
+                "- Rổ đựng hàng phế",
+                "- Phân khu rõ ràng"
+            ]
+        },
+        {
+            q: "Chính sách ba không",
+            a: [
+                "- Không tiếp nhận hàng kém chất lượng",
+                "- Không sản xuất hàng kém chất lượng",
+                "- Không thả hàng kém chất lượng"
+            ]
+        },
+        {
+            q: "Da bò",
+            a: [
+                "Da bò có 7 phần:",
+                "- Phần đầu",
+                "- Phần lưng",
+                "- Phần vai",
+                "- Phần bụng",
+                "- Phần mông",
+                "- Phần chân trước",
+                "- Phần chân sau",
+                "Da bò sử dụng cho các bộ vị:",
+                "- Phần bụng: eo trong, gót",
+                "- Phần bụng: eo trong, gót, lưỡi giày",
+                "- Phần vai: eo ngoài",
+                "- Phần mông, thân sau: mũi giày, mũi trước (phần trước) - Đây là phần tốt nhất của miếng da",
+                "- Phần chân trước: mặt giày",
+                "Trọng điểm khi kiểm da bò:",
+                "- Đặt GM, BM lên trước, xem toàn bộ miếng da: Lông, vết thương, nhăn, độ dày...",
+                "- Phân cấp A-B-C-D",
+                "- Xem có bị lông dài, gân, độ mềm cứng",
+                "- Màu sắc phải phân rõ ràng",
+                "- Chống nước và không chống nước để riêng",
+                "- Dán tem đạt hoặc không đạt",
+                "Da bò phân ra 4 cấp (Diện tích sử dụng):",
+                "- Cấp A: 92%",
+                "- Cấp B: 85%",
+                "- Cấp C: 78%",
+                "- Cấp D: 78% trở xuống => Trả Hàng",
+                "Tỉ lệ hao hụt do lỗi:",
+                "- Cấp A: 0,01 => 0,08",
+                "- Cấp B: 0,09 => 0,15",
+                "- Cấp C: 0,16 => 0,22",
+                "- Cấp D: 0,22 trở lên"
+            ]
+        },
+        {
+            q: "Theo dõi liệu giày thành phẩm",
+            a: [
+                "- Nếu vải lưới mũi giày có vấn đề có thể kiểm tra chỗ để trung chuyển thành hình có đóng mộc ngày và chuyền sản xuất.",
+                "- Xác nhận bình quân ngày đó thành hình sản xuất những đơn nào (dựa theo tên hình thể, ngày thành hình, chuyền sản xuất)",
+                "- Nếu vải lưới mũi giày phẩm chất có vấn đề, vận dụng kho tư tài (Kiểm tra tồn, tình trạng đơn đặt, thu mua đăng nhập đơn đặt có thể tra mã số vật liệu có vấn đề)",
+                "- Vận dụng chi tiết liệu tồn kho có thể biết đơn nào có sử dụng liệu có vấn đề",
+                "- Vận dụng mã số đơn thu mua tra tìm có thể theo dõi mã đơn nhận hàng của liệu cần tra tìm",
+                "- Mã đơn nhận liệu có thể biết được tên nhà cung ứng, số lượng nhận hàng, ngày nhận hàng"
+            ]
+        },
+        {
+            q: "Hình Thể mới cần dựa vào gì để kiểm hàng",
+            a: [
+                "- Giày Mẫu",
+                "- Biểu mẫu",
+                "- Báo cáo PT",
+                "- Bảng quy cách",
+                "- Đối chiếu chỉ lệnh và giày mẫu biểu mẫu",
+                "- Cập nhật LLNB",
+                "- Dụng cụ kiểm hàng"
+            ]
+        },
+        {
+            q: "Tiêu chuẩn rút kiểm",
+            a: [
+                "- Theo tiêu chuẩn tỷ lệ rút kiểm mỗi size 5% (riêng dây giày 10%) trên tổng số lượng hàng nhập về.",
+                "- Nếu tỷ lệ rút kiểm không đạt dưới 10% (10% của 5% rút kiểm) thì mở đơn phản ánh yêu cầu xưởng cung ứng tái chế.",
+                "- Ngược lại hàng không đạt trên 10% (10% của 5% rút kiểm) thì trả hàng cho xưởng cung ứng."
+            ]
+        },
+        {
+            q: "ISO/OHSAS",
+            a: [
+                "Nói Viết Làm đồng nhất:",
+                "- Nói những gì mình làm",
+                "- Viết những gì mình nói",
+                "- Làm những gì mình viết"
+            ]
+        },
+        {
+            q: "Các hạng mục đào tạo",
+            a: [
+                "- Đào tạo QC những kiến thức cơ bản",
+                "- Đào tạo QC các tiêu chuẩn kiểm hàng",
+                "- Lưu trình kiểm nghiệm nguyên vật liệu",
+                "- Đào tạo DPR"
+            ]
+        },
+        {
+            q: "Khi kiểm tra cần làm những gì",
+            a: [
+                "- Xem lại tem nhãn có dán OK chưa, dán có đúng không, có sót tem không.",
+                "- Khu không hợp cách: nếu có liệu để xem có dán đầy đủ tem nhãn chưa. Mã U rõ ràng",
+                "- Xem liệu có mở đơn trả hàng không",
+                "- Báo cáo thí nghiệm phải theo dõi đánh kết quả OK",
+                "- Hệ thống phải kiểm tra lại có sót không, nếu sót phải bổ sung lại OK"
+            ]
+        },
+        {
+            q: "Nếu GM_BM không giống nhau",
+            a: [
+                "- Tra lại hệ thống, chỉ lệnh, LLNB",
+                "- Đối chiếu GM BM xem liệu nào sai",
+                "- Liên hệ với nghiệp vụ khai thác",
+                "- Sau đó báo cán bộ"
+            ]
+        },
+        {
+            q: "Vấn đề phát sinh gia công ở đơn trước",
+            a: [
+                "- Lô sau về QC phải chú ý vấn đề ở lô trước có xảy ra không",
+                "- Trải liệu xem có bị vấn đề không (Vấn đề cũ + mới)",
+                "- Có vấn đề báo cán bộ biết, cắt liệu vấn đề giữ lại",
+                "- Nếu lô sau giống như lô trước không cải thiện => ta mở đơn trả hàng cho xưởng cung ứng yêu cầu xưởng cung ứng qua xem liệu",
+                "- Nếu lô sau về được cải thiện không có vấn đề gì ta cũng báo cáo cán bộ biết ngay là hàng OK"
+            ]
+        },
+        {
+            q: "Thế nào là lỗi trọng điểm, lỗi chính, lỗi nhỏ",
+            a: [
+                "Lỗi trọng tâm: Những lỗi ảnh hưởng đến sự an toàn của người dùng khi sử dụng hoặc rủi ro pháp lý",
+                "- Thông tin tem lưỡi gà",
+                "- Kết quả thử nghiệm phòng thí nghiệm liệu đầu vào",
+                "Lỗi chính: Những lỗi ảnh hưởng đến việc bán hoặc ngưng bán sản phẩm, quá trình sử dụng hoặc quá trình hình thành sản phẩm",
+                "- Màu sắc, quy cách, sai liệu,...",
+                "Lỗi nhỏ: Những lỗi không ảnh hưởng trực tiếp đến việc bán sản phẩm, việc sử dụng hay quá trình hình thành sản phẩm. Khách hàng sẽ phát hiện ra lỗi này khi mua hàng nhưng họ vẫn sẽ quyết định mua nó",
+                "- Màu sắc khác nhau, vệ sinh và ngoại quan...",
+                "2.1 Tần suất kiểm tra ngoại quan:",
+                "- Vải lưới, da nhân tạo, TPU film, da bò: kiểm 100% tất cả các cuộn",
+                "- Các vật liệu còn lại: Kiểm theo lưu trình quy định"
+            ]
+        },
+        {
+            q: "Phân khu trong kho",
+            a: [
+                "Mục đích của việc phân khu:",
+                "- Phân chia khu vực hàng OK, hàng No OK, hàng chưa kiểm hoặc hàng đã nhập kho để khi phát hàng tránh phát hàng chưa kiểm hoặc hàng No OK cho hiện trường sản xuất.",
+                "- Hàng có vấn đề trước tiên cần mở đơn vật liệu không đạt, thông báo cán bộ để xử lý, sau đó dán tem đỏ (Reject), ghi rõ ngày mở đơn và để lại hàng ở khu không hợp cách (Khu vực Reject). Sau đó nhập kết quả vào hệ thống.",
+                "Trách nhiệm QCTT:",
+                "- Kiểm tra phẩm chất đầu vào, hạn chế vấn đề phát sinh khi qua hiện trường.",
+                "- Khi phát sinh vấn đề QC mở đơn => thông báo cán bộ, chủ quản => dán tem REJECTED ghi rõ ngày tháng => thông báo kho và để hàng ở khu không hợp cách => nhập hệ thống."
+            ]
+        },
+        {
+            q: "Đèn so màu liệu",
+            a: [
+                "- Đèn hợp cách so màu là hộp đèn",
+                "- Đèn chuẩn Decathlon là TL84",
+                "- Đèn thông dụng là đèn TL84 (F11) và đèn D65",
+                "- Tiêu chuẩn so màu < 1 OK"
+            ]
+        }
+    ];
+
+    const buttonStrip = document.getElementById('buttonStrip');
+    const answerTitle = document.getElementById('answerTitle');
+    const answerContent = document.getElementById('answerContent');
+
+    // Khởi tạo các nút câu hỏi trên 1 hàng ngang
+    qaList.forEach((item, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'question-btn';
+        btn.textContent = item.q;
+        btn.onclick = () => selectQuestion(index);
+        buttonStrip.appendChild(btn);
+    });
+
+    function selectQuestion(index) {
+        const buttons = document.querySelectorAll('.question-btn');
+
+        buttons.forEach((btn, idx) => {
+            if (idx === index) {
+                btn.classList.add('active');
+                btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        answerTitle.textContent = qaList[index].q;
+        answerContent.innerHTML = '';
+
+        // Tạo từng dòng riêng biệt để đảm bảo luôn xuống dòng chuẩn trên mọi trình duyệt
+        qaList[index].a.forEach(line => {
+            const div = document.createElement('div');
+            const isHeading = !line.trim().startsWith('-') && !line.trim().startsWith('+') && line.trim().endsWith(':');
+            div.className = isHeading ? 'answer-line heading' : 'answer-line';
+            div.textContent = line;
+            answerContent.appendChild(div);
+        });
+    }
+
+    // Mặc định chọn câu đầu tiên khi mở trang
+    selectQuestion(0);
+</script>
+
+</body>
+</html>
